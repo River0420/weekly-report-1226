@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weekly Report Dashboard - Neo-Brutalism</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <!-- Adding Google Fonts for better typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 p-6 md:p-10">
+  
+  <script>
+    // ==================== MOCK DATA (可由 AI 自動替換) ====================
+    const data = {
+      weekRange: "12/15~12/22",
+      weekNumber: "W53",
+      
+      keySummary: "本週重點成果:完成 3 個 CTM 會議,推進 5 個 DTS 專案進入量產階段。TW1 BU 本季營收突破目標 120%,TW2 ADVANTAGE 持續穩定成長。下週將聚焦於 Q2 新專案啟動與客戶需求確認。",
+      
+      projects: [
+        { customer: "鴻海科技", project: "5G 基站方案", application: "通訊設備", partNumber: "DTS-2024-001", quantity: 5000, amt: 2500000, mpTime: "2024-Q2" },
+        { customer: "台積電", project: "半導體測試平台", application: "測試設備", partNumber: "DTS-2024-002", quantity: 1200, amt: 8900000, mpTime: "2024-Q3" },
+        { customer: "廣達電腦", project: "AI 伺服器散熱", application: "散熱方案", partNumber: "DTS-2024-003", quantity: 3000, amt: 4200000, mpTime: "2024-Q2" },
+        { customer: "和碩聯合", project: "智慧製造系統", application: "工業控制", partNumber: "DTS-2024-004", quantity: 800, amt: 1500000, mpTime: "2024-Q4" },
+        { customer: "緯創資通", project: "車載電子方案", application: "車用電子", partNumber: "DTS-2024-005", quantity: 2500, amt: 6700000, mpTime: "2024-Q3" }
+      ],
+      
+      weeklySchedule: {
+        monday: {
+          am: "09:00 - CTM 會議：鴻海 5G 專案進度確認",
+          pm: "14:00 - 內部技術討論：散熱方案優化"
+        },
+        tuesday: {
+          am: "10:00 - 客戶拜訪：台積電測試平台需求",
+          pm: "15:00 - CTM 會議：廣達 AI 伺服器專案"
+        },
+        wednesday: {
+          am: "09:30 - 供應商會議：料件交期協調",
+          pm: "13:00 - 團隊會議：週進度檢討"
+        },
+        thursday: {
+          am: "10:30 - 客戶簡報：和碩智慧製造方案",
+          pm: "14:30 - CTM 會議：緯創車載專案里程碑"
+        },
+        friday: {
+          am: "09:00 - BU 會議：Q2 目標規劃",
+          pm: "15:00 - 週報整理與下週規劃"
+        }
+      },
+      
+      meetingNotes: {
+        "monday-am": "【鴻海 5G 專案 CTM 會議紀錄】\n\n參與人員：張經理、李工程師、王主任\n\n討論事項：\n1. 專案進度已達 85%，預計下週完成初步測試\n2. 客戶要求增加 2 組備用模組\n3. 確認量產時程為 Q2 第一週\n\n待辦事項：\n- 更新 BOM 清單 (負責人：李工程師)\n- 安排客戶端測試 (負責人：張經理)\n- 準備量產文件 (負責人：王主任)",
+        "monday-pm": "【散熱方案優化技術討論】\n\n重點議題：\n- 評估新型散熱材料效能提升 15%\n- 成本分析：單價增加 $50，但可提升產品競爭力\n- 決議先進行小批量測試驗證",
+        "tuesday-am": "【台積電測試平台需求會議】\n\n客戶需求：\n- 高精度測試環境，誤差需小於 0.1%\n- 預算範圍：$8M-10M\n- 時程要求：Q3 前完成交付\n\n後續行動：\n- 提供技術規格書 (本週五前)\n- 安排原型展示 (下週二)",
+        "tuesday-pm": "【廣達 AI 伺服器 CTM 會議】\n\n專案狀態：綠燈\n- 散熱方案測試通過，溫度控制優於預期 8°C\n- 客戶滿意度高，追加 1000 組訂單\n- MP 時程提前至 Q2 第三週",
+        "wednesday-am": "【供應商會議：料件交期協調】\n\n討論結果：\n- 關鍵料件 A 可提前一週交付\n- 料件 B 受疫情影響延遲 3 天\n- 已協調備用供應商因應",
+        "wednesday-pm": "【團隊週進度檢討】\n\n本週達成：\n✓ 完成 3 個客戶簡報\n✓ 2 個專案進入量產階段\n✓ 新增 1 個潛在客戶\n\n下週重點：\n- 加速 Q2 專案啟動\n- 強化客戶關係維護",
+        "thursday-am": "【和碩智慧製造方案簡報】\n\n簡報成效：優良\n- 客戶對技術方案高度認可\n- 預算確認：$1.5M\n- 下一步：等待採購部門核准\n\n預計簽約時間：4 月中旬",
+        "thursday-pm": "【緯創車載專案 CTM 會議】\n\n里程碑達成：\n✓ 通過車規級認證測試\n✓ 完成 DOE 驗證\n✓ 客戶確認量產規格\n\n量產準備度：95%\nMP Date: Q3 第一週",
+        "friday-am": "【BU Q2 目標規劃會議】\n\nQ2 目標設定：\n- TW1 BU: $25M (成長 30%)\n- TW2 ADVANTAGE: $18M (穩定成長 15%)\n- 新客戶開發：至少 5 家\n\n策略重點：\n1. 深化既有客戶合作\n2. 拓展新應用領域\n3. 強化技術差異化",
+        "friday-pm": "【週報整理與下週規劃】\n\n本週總結：\n- 完成率：92%\n- 客戶滿意度：4.5/5\n- 新增商機：$12M\n\n下週重點任務：\n1. 啟動 2 個新專案 kick-off\n2. 完成 3 份技術提案\n3. 客戶拜訪：2 家\n4. 團隊教育訓練：新產品介紹"
+      },
+      
+      quarterlyData: [
+        { quarter: "2026 Q1", amt: 15200000 },
+        { quarter: "2026 Q2", amt: 18900000 },
+        { quarter: "2026 Q3", amt: 22400000 },
+        { quarter: "2026 Q4", amt: 19800000 }
+      ],
+      
+      buDistribution: [
+        { bu: "TW1", amt: 32500000 },
+        { bu: "TW2", amt: 14200000 },
+        { bu: "ADVANTAGE", amt: 14200000 },
+        { bu: "Others", amt: 15400000 }
+      ]
+    };
+    // ==================== END OF MOCK DATA ====================
+  </script>
+
+  <div class="max-w-7xl mx-auto space-y-6">
+    
+    <!-- Refined header with better spacing and lighter borders -->
+    <div class="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white p-8">
+      <h1 class="text-4xl md:text-5xl font-black tracking-tight">WEEKLY REPORT</h1>
+      <!-- Updated to display week range and week number dynamically -->
+      <p class="text-base font-semibold mt-2 text-gray-500">Dashboard Overview <span id="weekInfo"></span></p>
+    </div>
+
+    <!-- Refined KEY SUMMARY with cleaner design -->
+    <div class="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white">
+      <div class="flex">
+        <div class="w-1.5 bg-[#ED1C24]"></div>
+        <div class="flex-1 p-6 md:p-8">
+          <h2 class="text-2xl font-black mb-4 text-gray-900">KEY SUMMARY</h2>
+          <p id="keySummary" class="text-base leading-relaxed text-gray-700"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Refined table with lighter borders and better spacing -->
+    <div class="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white p-6 md:p-8">
+      <h2 class="text-2xl font-black mb-6 text-gray-900">PROJECT INFORMATION</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="bg-black text-white">
+              <th class="border border-black p-3 text-left font-bold text-sm">客戶名稱</th>
+              <th class="border border-black p-3 text-left font-bold text-sm">專案名稱</th>
+              <th class="border border-black p-3 text-left font-bold text-sm">應用</th>
+              <th class="border border-black p-3 text-left font-bold text-sm">料號</th>
+              <th class="border border-black p-3 text-right font-bold text-sm">數量</th>
+              <th class="border border-black p-3 text-right font-bold text-sm">Amt</th>
+              <th class="border border-black p-3 text-left font-bold text-sm">MP 時間</th>
+            </tr>
+          </thead>
+          <tbody id="projectTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Redesigned weekly schedule with timeline-style layout -->
+    <div class="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white p-6 md:p-8">
+      <h2 class="text-2xl font-black mb-6 text-gray-900">WEEKLY SCHEDULE</h2>
+      <div class="overflow-x-auto">
+        <div class="inline-block min-w-full">
+          <!-- Header row with days -->
+          <div class="grid grid-cols-6 border-2 border-black">
+            <div class="bg-black text-white p-3 border-r-2 border-black font-bold text-sm text-center">TIME</div>
+            <div class="bg-black text-white p-3 border-r-2 border-black font-bold text-sm text-center">Monday<br/><span class="text-xs opacity-80">12/15</span></div>
+            <div class="bg-black text-white p-3 border-r-2 border-black font-bold text-sm text-center">Tuesday<br/><span class="text-xs opacity-80">12/16</span></div>
+            <div class="bg-black text-white p-3 border-r-2 border-black font-bold text-sm text-center">Wednesday<br/><span class="text-xs opacity-80">12/17</span></div>
+            <div class="bg-black text-white p-3 border-r-2 border-black font-bold text-sm text-center">Thursday<br/><span class="text-xs opacity-80">12/18</span></div>
+            <div class="bg-black text-white p-3 font-bold text-sm text-center">Friday<br/><span class="text-xs opacity-80">12/19</span></div>
+          </div>
+          <!-- AM row -->
+          <div class="grid grid-cols-6 border-l-2 border-r-2 border-b-2 border-black">
+            <div class="bg-gray-100 p-3 border-r-2 border-black font-bold text-sm flex items-center justify-center">AM</div>
+            <div id="monday-am-cell" class="p-3 border-r-2 border-black cursor-pointer hover:bg-gray-50 transition-colors text-sm"></div>
+            <div id="tuesday-am-cell" class="p-3 border-r-2 border-black cursor-pointer hover:bg-gray-50 transition-colors text-sm"></div>
+            <div id="wednesday-am-cell" class="p-3 border-r-2 border-black cursor-pointer hover:bg-gray-50 transition-colors text-sm"></div>
+            <div id="thursday-am-cell" class="p-3 border-r-2 border-black cursor-pointer hover:bg-gray-50 transition-colors text-sm"></div>
+            <div id="friday-am-cell" class="p-3 cursor-pointer hover:bg-gray-50 transition-colors text-sm"></div>
+          </div>
+          <!-- PM row -->
+          <div class="grid grid-cols-6 border-l-2 border-r-2 border-b-2 border-black">
+            <div class="bg-gray-100 p-3 border-r-2 border-black font-bold text-sm flex items-center justify-center">PM</div>
+            <div id="monday-pm-cell" class="p-3 border-r-2 border-black cursor-pointer hover:bg-gray-50 transition-colors text-sm"></div>
+            <div id="tuesday-pm-cell" class="p-3 border-r-2 border-black cursor-pointer hover:bg-gray-50 transition-colors text-sm"></div>
+            <div id="wednesday-pm-cell" class="p-3 border-r-2 border-black cursor-pointer hover:bg-gray-50 transition-colors text-sm"></div>
+            <div id="thursday-pm-cell" class="p-3 border-r-2 border-black cursor-pointer hover:bg-gray-50 transition-colors text-sm"></div>
+            <div id="friday-pm-cell" class="p-3 cursor-pointer hover:bg-gray-50 transition-colors text-sm"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Added TOTAL DEMAND CREATION headline above charts section -->
+    <div class="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white p-6 md:p-8">
+      <h2 class="text-2xl font-black text-gray-900">TOTAL DEMAND CREATION</h2>
+    </div>
+
+    <!-- Refined charts with better layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Bar Chart -->
+      <div class="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white p-6">
+        <h2 class="text-xl font-black mb-4 text-gray-900">QUARTERLY PIPELINE</h2>
+        <div id="barChart"></div>
+        <div class="text-center mt-4">
+          <p class="text-2xl font-bold text-gray-900" id="totalPipeline"></p>
+        </div>
+      </div>
+      
+      <!-- Pie Chart -->
+      <div class="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white p-6">
+        <h2 class="text-xl font-black mb-4 text-gray-900">BU DISTRIBUTION</h2>
+        <div id="pieChart"></div>
+        <div class="text-center mt-4">
+          <p class="text-2xl font-bold text-gray-900" id="totalBU"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Refined drawer with cleaner styling -->
+  <div id="drawer" class="fixed inset-y-0 left-0 w-full md:w-1/3 bg-white border-r-2 border-black shadow-[8px_0px_0px_0px_rgba(0,0,0,1)] transform -translate-x-full transition-transform duration-300 z-50 overflow-y-auto">
+    <div class="p-6 md:p-8">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-xl font-black text-gray-900">MEETING DETAILS</h3>
+        <button onclick="closeDrawer()" class="border-2 border-black bg-[#ED1C24] text-white px-5 py-2 font-bold text-sm hover:bg-black hover:text-[#ED1C24] transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+          CLOSE
+        </button>
+      </div>
+      <div class="border-2 border-black p-5 bg-gray-50">
+        <pre id="drawerContent" class="whitespace-pre-wrap text-sm leading-relaxed text-gray-800"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay -->
+  <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40" onclick="closeDrawer()"></div>
+
+  <script>
+    document.getElementById('weekInfo').textContent = `${data.weekRange} ${data.weekNumber}`;
+    
+    // Render Key Summary
+    document.getElementById('keySummary').textContent = data.keySummary;
+
+    // Render Project Table
+    const projectTable = document.getElementById('projectTable');
+    data.projects.forEach((project, index) => {
+      const row = document.createElement('tr');
+      row.className = index % 2 === 0 ? 'bg-gray-50' : 'bg-white';
+      row.innerHTML = `
+        <td class="border border-gray-300 p-3 font-semibold text-sm">${project.customer}</td>
+        <td class="border border-gray-300 p-3 text-sm">${project.project}</td>
+        <td class="border border-gray-300 p-3 text-sm text-gray-600">${project.application}</td>
+        <td class="border border-gray-300 p-3 font-mono text-xs text-gray-700">${project.partNumber}</td>
+        <td class="border border-gray-300 p-3 text-right text-sm">${project.quantity.toLocaleString()}</td>
+        <td class="border border-gray-300 p-3 text-right font-bold text-sm">${project.amt.toLocaleString()}</td>
+        <td class="border border-gray-300 p-3 text-sm">${project.mpTime}</td>
+      `;
+      projectTable.appendChild(row);
+    });
+
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+    
+    days.forEach(day => {
+      const daySchedule = data.weeklySchedule[day];
+      
+      // Render AM cell
+      const amCell = document.getElementById(`${day}-am-cell`);
+      amCell.onclick = () => openDrawer(`${day}-am`);
+      
+      if (daySchedule.am.includes('CTM')) {
+        const ctmIndicator = document.createElement('div');
+        ctmIndicator.className = 'inline-block text-xs font-semibold mb-1 text-gray-700';
+        ctmIndicator.textContent = '💼 會議紀錄...';
+        amCell.appendChild(ctmIndicator);
+        amCell.appendChild(document.createElement('br'));
+      }
+      
+      const amText = document.createTextNode(daySchedule.am);
+      amCell.appendChild(amText);
+      
+      // Render PM cell
+      const pmCell = document.getElementById(`${day}-pm-cell`);
+      pmCell.onclick = () => openDrawer(`${day}-pm`);
+      
+      if (daySchedule.pm.includes('CTM')) {
+        const ctmIndicator = document.createElement('div');
+        ctmIndicator.className = 'inline-block text-xs font-semibold mb-1 text-gray-700';
+        ctmIndicator.textContent = '💼 會議紀錄...';
+        pmCell.appendChild(ctmIndicator);
+        pmCell.appendChild(document.createElement('br'));
+      }
+      
+      const pmText = document.createTextNode(daySchedule.pm);
+      pmCell.appendChild(pmText);
+    });
+
+    // Drawer Functions
+    function openDrawer(sessionKey) {
+      const drawer = document.getElementById('drawer');
+      const overlay = document.getElementById('overlay');
+      const content = document.getElementById('drawerContent');
+      
+      content.textContent = data.meetingNotes[sessionKey] || '暫無會議紀錄';
+      drawer.classList.remove('-translate-x-full');
+      overlay.classList.remove('hidden');
+    }
+
+    function closeDrawer() {
+      const drawer = document.getElementById('drawer');
+      const overlay = document.getElementById('overlay');
+      
+      drawer.classList.add('-translate-x-full');
+      overlay.classList.add('hidden');
+    }
+
+    // Bar Chart
+    const totalPipeline = data.quarterlyData.reduce((sum, item) => sum + item.amt, 0);
+    document.getElementById('totalPipeline').textContent = `Total: $${(totalPipeline / 1000000).toFixed(1)}M`;
+    
+    const barChartOptions = {
+      series: [{
+        name: 'Amount',
+        data: data.quarterlyData.map(item => item.amt)
+      }],
+      chart: {
+        type: 'bar',
+        height: 280,
+        toolbar: { show: false },
+        fontFamily: 'Inter, sans-serif'
+      },
+      plotOptions: {
+        bar: {
+          borderRadius: 0,
+          dataLabels: { position: 'top' },
+          columnWidth: '60%'
+        }
+      },
+      dataLabels: {
+        enabled: true,
+        formatter: val => `$${(val / 1000000).toFixed(1)}M`,
+        offsetY: -20,
+        style: {
+          fontSize: '11px',
+          fontWeight: '700',
+          colors: ['#000']
+        }
+      },
+      xaxis: {
+        categories: data.quarterlyData.map(item => item.quarter),
+        labels: {
+          style: {
+            fontWeight: '600',
+            fontSize: '11px',
+            colors: '#374151'
+          }
+        }
+      },
+      yaxis: {
+        labels: {
+          formatter: val => `$${(val / 1000000).toFixed(0)}M`,
+          style: {
+            fontWeight: '600',
+            fontSize: '11px',
+            colors: '#6B7280'
+          }
+        }
+      },
+      colors: ['#ED1C24'],
+      grid: {
+        borderColor: '#E5E7EB',
+        strokeDashArray: 4
+      }
+    };
+    
+    const barChart = new ApexCharts(document.querySelector("#barChart"), barChartOptions);
+    barChart.render();
+
+    // Pie Chart
+    const totalBU = data.buDistribution.reduce((sum, item) => sum + item.amt, 0);
+    document.getElementById('totalBU').textContent = `Total: $${(totalBU / 1000000).toFixed(1)}M`;
+    
+    const maxBU = Math.max(...data.buDistribution.map(item => item.amt));
+    const pieColors = data.buDistribution.map(item => 
+      item.amt === maxBU ? '#ED1C24' : ['#374151', '#6B7280', '#9CA3AF'][data.buDistribution.indexOf(item) % 3]
+    );
+    
+    const pieChartOptions = {
+      series: data.buDistribution.map(item => item.amt),
+      chart: {
+        type: 'pie',
+        height: 280,
+        fontFamily: 'Inter, sans-serif'
+      },
+      labels: data.buDistribution.map(item => item.bu),
+      colors: pieColors,
+      legend: {
+        position: 'bottom',
+        fontWeight: '600',
+        fontSize: '12px'
+      },
+      dataLabels: {
+        enabled: true,
+        formatter: (val, opts) => {
+          const amt = data.buDistribution[opts.seriesIndex].amt;
+          return `$${(amt / 1000000).toFixed(1)}M`;
+        },
+        style: {
+          fontSize: '12px',
+          fontWeight: '700'
+        }
+      },
+      stroke: {
+        width: 2,
+        colors: ['#000']
+      }
+    };
+    
+    const pieChart = new ApexCharts(document.querySelector("#pieChart"), pieChartOptions);
+    pieChart.render();
+  </script>
+
+</body>
+</html>
